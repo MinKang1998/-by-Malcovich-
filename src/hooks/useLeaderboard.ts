@@ -19,13 +19,13 @@ export function useLeaderboard() {
   useEffect(() => {
     fetchLeaderboard();
 
+    const channelName = `games-changes-${Math.random().toString(36).slice(2)}`;
     const channel = supabase
-      .channel('games-changes')
-      .on('postgres_changes', {
+      .channel(channelName)
+      .on('postgres_changes' as any, {
         event: 'UPDATE',
         schema: 'public',
         table: 'games',
-        filter: `status=neq.playing`,
       }, () => {
         fetchLeaderboard();
       })

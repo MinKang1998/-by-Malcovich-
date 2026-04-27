@@ -96,26 +96,52 @@ export default function Home() {
         </div>
       )}
 
-      {/* Main */}
-      <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-4 flex gap-6">
-        {/* Mobile tab switcher */}
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-20 flex">
-          <button
-            onClick={() => setActiveTab('game')}
-            className={`flex-1 py-3 text-sm font-medium transition-colors ${activeTab === 'game' ? 'text-gray-900 border-t-2 border-[#FAE100]' : 'text-gray-400'}`}
-          >
-            🎮 게임
-          </button>
-          <button
-            onClick={() => setActiveTab('board')}
-            className={`flex-1 py-3 text-sm font-medium transition-colors ${activeTab === 'board' ? 'text-gray-900 border-t-2 border-[#FAE100]' : 'text-gray-400'}`}
-          >
-            🏆 리더보드
-          </button>
-        </div>
+      {/* Mobile tab bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-20 flex">
+        <button
+          onClick={() => setActiveTab('game')}
+          className={`flex-1 py-3 text-sm font-medium transition-colors ${activeTab === 'game' ? 'text-gray-900 border-t-2 border-[#FAE100]' : 'text-gray-400'}`}
+        >
+          🎮 게임
+        </button>
+        <button
+          onClick={() => setActiveTab('board')}
+          className={`flex-1 py-3 text-sm font-medium transition-colors ${activeTab === 'board' ? 'text-gray-900 border-t-2 border-[#FAE100]' : 'text-gray-400'}`}
+        >
+          🏆 리더보드
+        </button>
+      </div>
 
-        {/* Game area */}
-        <div className={`flex-1 flex flex-col items-center gap-4 pb-24 lg:pb-4 ${activeTab !== 'game' ? 'hidden lg:flex' : 'flex'}`}>
+      {/* Mobile: 게임 탭 */}
+      <main className={`lg:hidden flex-1 flex flex-col items-center gap-4 px-4 py-4 pb-24 ${activeTab === 'game' ? 'flex' : 'hidden'}`}>
+        {loading ? (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-gray-400 text-lg">단어 불러오는 중...</div>
+          </div>
+        ) : gameState ? (
+          <>
+            <div className="flex gap-4 text-xs text-gray-500">
+              <span className="flex items-center gap-1"><span className="w-4 h-4 rounded bg-[#4CAF50] inline-block"></span>정확한 위치</span>
+              <span className="flex items-center gap-1"><span className="w-4 h-4 rounded bg-[#FFC107] inline-block"></span>다른 위치</span>
+              <span className="flex items-center gap-1"><span className="w-4 h-4 rounded bg-[#9E9E9E] inline-block"></span>없는 자모</span>
+            </div>
+            <GameBoard rows={displayRows} shake={shake} currentRow={gameState.currentRow} />
+            <div className="flex-1 min-h-4" />
+            <Keyboard keyStatuses={keyStatuses} onJamo={submitJamo} onDelete={deleteJamo} onEnter={submitGuess} disabled={disabled} />
+            {nickname && <div className="w-full max-w-sm"><HistoryPanel nickname={nickname} refreshKey={historyKey} /></div>}
+          </>
+        ) : null}
+      </main>
+
+      {/* Mobile: 리더보드 탭 */}
+      <main className={`lg:hidden flex-1 px-4 py-4 pb-24 overflow-y-auto ${activeTab === 'board' ? 'block' : 'hidden'}`}>
+        <Leaderboard currentNickname={nickname || undefined} />
+        {nickname && <div className="mt-4"><HistoryPanel nickname={nickname} refreshKey={historyKey} /></div>}
+      </main>
+
+      {/* Desktop */}
+      <main className="hidden lg:flex flex-1 max-w-5xl mx-auto w-full px-4 py-4 gap-6">
+        <div className="flex-1 flex flex-col items-center gap-4">
           {loading ? (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-gray-400 text-lg">단어 불러오는 중...</div>
@@ -127,41 +153,16 @@ export default function Home() {
                 <span className="flex items-center gap-1"><span className="w-4 h-4 rounded bg-[#FFC107] inline-block"></span>다른 위치</span>
                 <span className="flex items-center gap-1"><span className="w-4 h-4 rounded bg-[#9E9E9E] inline-block"></span>없는 자모</span>
               </div>
-
               <GameBoard rows={displayRows} shake={shake} currentRow={gameState.currentRow} />
-
               <div className="flex-1 min-h-4" />
-
-              <Keyboard
-                keyStatuses={keyStatuses}
-                onJamo={submitJamo}
-                onDelete={deleteJamo}
-                onEnter={submitGuess}
-                disabled={disabled}
-              />
-
-              {nickname && (
-                <div className="w-full max-w-sm lg:hidden">
-                  <HistoryPanel nickname={nickname} refreshKey={historyKey} />
-                </div>
-              )}
+              <Keyboard keyStatuses={keyStatuses} onJamo={submitJamo} onDelete={deleteJamo} onEnter={submitGuess} disabled={disabled} />
             </>
           ) : null}
         </div>
-
-        {/* Sidebar - Desktop */}
-        <aside className="hidden lg:flex flex-col gap-4 w-72 shrink-0">
+        <aside className="flex flex-col gap-4 w-72 shrink-0">
           <Leaderboard currentNickname={nickname || undefined} />
           {nickname && <HistoryPanel nickname={nickname} refreshKey={historyKey} />}
         </aside>
-
-        {/* Mobile leaderboard */}
-        {activeTab === 'board' && (
-          <div className="flex-1 pb-20 lg:hidden">
-            <Leaderboard currentNickname={nickname || undefined} />
-            {nickname && <div className="mt-4"><HistoryPanel nickname={nickname} refreshKey={historyKey} /></div>}
-          </div>
-        )}
       </main>
 
       {/* Modals */}

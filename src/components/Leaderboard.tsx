@@ -41,9 +41,11 @@ export default function Leaderboard({ currentNickname }: Props) {
                 {entry.nickname === currentNickname && <span className="text-xs text-gray-400 ml-1">(나)</span>}
               </span>
               <div className="flex gap-2 text-right text-xs text-gray-500 shrink-0">
-                <span className="text-[#4CAF50] font-bold">{entry.wins}승</span>
-                <span>{entry.avg_attempts}회</span>
-                <span>{entry.avg_duration}s</span>
+                <span className={`font-bold ${entry.wins > 0 ? 'text-[#4CAF50]' : 'text-gray-400'}`}>
+                  {entry.wins}승
+                </span>
+                <span>{entry.total_games}판</span>
+                {entry.avg_attempts ? <span>{entry.avg_attempts}회</span> : null}
               </div>
             </div>
           ))}
